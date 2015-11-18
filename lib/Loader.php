@@ -93,11 +93,16 @@ class Loader implements LoaderInterface
             if (!$this->checkKeyAlgorithm($jwk, $key_encryption_algorithm->getAlgorithmName())) {
                 continue;
             }
-            $cek = $this->decryptCEK($key_encryption_algorithm, $content_encryption_algorithm, $jwk, $jwe->getEncryptedKey(), $complete_header);
 
-            if (!is_null($cek)) {
-                return $this->decryptPayload($jwe, $cek, $content_encryption_algorithm);
-            }
+            try {
+                $cek = $this->decryptCEK($key_encryption_algorithm, $content_encryption_algorithm, $jwk, $jwe->getEncryptedKey(), $complete_header);
+
+                if (!is_null($cek)) {
+                    if (true === $this->decryptPayload($jwe, $cek, $content_encryption_algorithm)) {
+                        return true;
+                    }
+                }
+            } catch( \InvalidArgumentException $e ) {}
         }
 
         return false;
@@ -131,9 +136,11 @@ class Loader implements LoaderInterface
             if (!$this->checkKeyAlgorithm($jwk, $algorithm->getAlgorithmName())) {
                 continue;
             }
-            if (true === $algorithm->verify($jwk, $input, $jws->getSignature())) {
-                return true;
-            }
+            try {
+                if (true === $algorithm->verify($jwk, $input, $jws->getSignature())) {
+                    return true;
+                }
+            } catch( \InvalidArgumentException $e ) {}
         }
 
         return false;
