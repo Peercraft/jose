@@ -31,10 +31,18 @@ class AudienceChecker implements CheckerInterface
     public function checkJWT(JWTInterface $jwt)
     {
         $aud = $jwt->getAudience();
-        if (!is_null($aud) && $this->audience !== $aud) {
-            throw new \Exception('Bad audience.');
+        if (is_null($aud)) {
+            return $this;
         }
 
-        return $this;
+        if (is_string($aud) && $this->audience == $aud) {
+            return $this;
+        }
+
+        if (is_array($aud) && in_array($this->audience, $aud, true)) {
+            return $this;
+        }
+
+        throw new \Exception('Bad audience.');
     }
 }
