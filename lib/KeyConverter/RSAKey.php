@@ -31,6 +31,8 @@ class RSAKey extends Sequence
     private $dp;
     private $dq;
     private $qi;
+    private $use;
+    private $key_ops;
 
     /**
      * @param \Jose\JWKInterface|string|array $data
@@ -97,6 +99,8 @@ class RSAKey extends Sequence
 
         $this->n = $jwk['n'];
         $this->e = $jwk['e'];
+        $this->use = isset($jwk['use']) ? $jwk['use'] : null;
+        $this->key_ops = isset($jwk['key_ops']) ? $jwk['key_ops'] : null;
         if (array_key_exists('p', $jwk)) {
             $this->private = true;
             $this->p = $jwk['p'];
@@ -220,6 +224,12 @@ class RSAKey extends Sequence
             'n'   => $this->n,
             'e'   => $this->e,
         ];
+        if (!is_null($this->use)) {
+            $values['use'] = $this->use;
+        }
+        if (!is_null($this->key_ops)) {
+            $values['key_ops'] = $this->key_ops;
+        }
         if (true === $this->private) {
             $values['p'] = $this->p;
             $values['d'] = $this->d;

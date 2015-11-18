@@ -28,6 +28,8 @@ class ECKey extends Sequence
     private $d;
     private $x;
     private $y;
+    private $use;
+    private $key_ops;
 
     /**
      * @param \Jose\JWKInterface|string|array $data
@@ -89,6 +91,8 @@ class ECKey extends Sequence
         $this->curve = $jwk['crv'];
         $this->x = $jwk['x'];
         $this->y = $jwk['y'];
+        $this->use = isset($jwk['use']) ? $jwk['use'] : null;
+        $this->key_ops = isset($jwk['key_ops']) ? $jwk['key_ops'] : null;
         if (array_key_exists('d', $jwk)) {
             $this->private = true;
             $this->d = $jwk['d'];
@@ -294,6 +298,12 @@ class ECKey extends Sequence
             'x'   => $this->x,
             'y'   => $this->y,
         ];
+        if (!is_null($this->use)) {
+            $values['use'] = $this->use;
+        }
+        if (!is_null($this->key_ops)) {
+            $values['key_ops'] = $this->key_ops;
+        }
         if (true === $this->private) {
             $values['d'] = $this->d;
         }
