@@ -106,9 +106,9 @@ class RSAKey extends Sequence
             $this->p = $jwk['p'];
             $this->d = $jwk['d'];
             $this->q = $jwk['q'];
-            $this->dp = $jwk['dp'];
-            $this->dq = $jwk['dq'];
-            $this->qi = $jwk['qi'];
+            $this->dp = isset($jwk['dp']) ? $jwk['dp'] : Base64Url::encode(0);
+            $this->dq = isset($jwk['dq']) ? $jwk['dq'] : Base64Url::encode(0);
+            $this->qi = isset($jwk['qi']) ? $jwk['qi'] : Base64Url::encode(0);
             $this->initPrivateKey();
         } else {
             $this->private = false;
