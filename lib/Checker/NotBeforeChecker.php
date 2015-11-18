@@ -15,13 +15,20 @@ use Jose\JWTInterface;
 
 class NotBeforeChecker implements CheckerInterface
 {
+    protected $leeway;
+
+    public function __construct($leeway = 30)
+    {
+        $this->leeway = $leeway;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function checkJWT(JWTInterface $jwt)
     {
         $nbf = $jwt->getNotBefore();
-        if (!is_null($nbf) && time() < $nbf) {
+        if (!is_null($nbf) && time() < $nbf-$this->leeway) {
             throw new \Exception('Can not use this JWT yet.');
         }
 

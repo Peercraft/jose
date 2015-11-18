@@ -15,13 +15,20 @@ use Jose\JWTInterface;
 
 class ExpirationChecker implements CheckerInterface
 {
+    protected $leeway;
+
+    public function __construct($leeway = 30)
+    {
+        $this->leeway = $leeway;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function checkJWT(JWTInterface $jwt)
     {
         $exp = $jwt->getExpirationTime();
-        if (!is_null($exp) && time() > $exp) {
+        if (!is_null($exp) && time() > $exp+$this->leeway) {
             throw new \Exception('The JWT has expired.');
         }
 

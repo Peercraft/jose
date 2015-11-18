@@ -15,14 +15,21 @@ use Jose\JWTInterface;
 
 class IssuedAtChecker implements CheckerInterface
 {
+    protected $leeway;
+
+    public function __construct($leeway = 30)
+    {
+        $this->leeway = $leeway;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function checkJWT(JWTInterface $jwt)
     {
         $iat = $jwt->getIssuedAt();
-        if (!is_null($iat) && time() < $iat) {
-            throw new \Exception('The JWT is issued in the futur.');
+        if (!is_null($iat) && time() < $iat-$this->leeway) {
+            throw new \Exception('The JWT is issued in the future.');
         }
 
         return $this;
